@@ -9,6 +9,7 @@ import javafx.scene.control.TextArea
 import javafx.scene.control.TextField
 import main.Transition
 import main.TransitionPane
+import net.HttpUtils
 import java.net.URL
 import java.util.*
 
@@ -43,7 +44,7 @@ class CustomSearch : Initializable, TransitionPane {
     @FXML
     fun onSearch() {
         val urlString = api + "&q=${searchField.text}&imgColorType=${colorCombo.selectionModel.selectedItem}&rights=${rightsCombo.selectionModel.selectedItem}"
-        resultArea.text = urlString
+        resultArea.text = HttpUtils.get(urlString)
     }
 
     override fun setTransition(transition: Transition) {
