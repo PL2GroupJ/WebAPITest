@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="google.CustomSearch">
+   <top>
+      <HBox alignment="CENTER" prefHeight="0.0" prefWidth="600.0" spacing="5.0" BorderPane.alignment="CENTER">
+         <children>
+            <TextField fx:id="searchField" focusTraversable="false" promptText="検索ワード" />
+            <ComboBox fx:id="colorCombo" prefWidth="150.0" promptText="色の選択" />
+            <ComboBox fx:id="rightsCombo" prefWidth="150.0" promptText="ライセンス" />
+            <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearch" text="検索" />
+         </children>
+      </HBox>
+   </top>
+   <center>
+      <TextArea fx:id="resultArea" editable="false" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
