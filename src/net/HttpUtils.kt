@@ -1,5 +1,6 @@
 package net
 
+import javafx.scene.image.Image
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -31,5 +32,30 @@ object HttpUtils {
 
         val input = BufferedReader(InputStreamReader(con.inputStream))
         return input.readText()
+    }
+
+    fun getImage(urlString: String): Image? {
+        val url = URL(urlString)
+        val con = when (url.protocol) {
+            "http" -> url.openConnection() as HttpURLConnection
+            "https" -> url.openConnection() as HttpsURLConnection
+            else -> {
+                IllegalArgumentException("プロトコルにはhttpまたはhttpsを指定してください")
+                return null
+            }
+        }.apply {
+            requestMethod = "GET"
+            instanceFollowRedirects = false
+            readTimeout = 10000
+            connectTimeout = 20000
+            connect()
+        }
+
+        if (con.responseCode != HttpURLConnection.HTTP_OK) {
+            println("通信失敗:${con.responseCode}")
+            return null
+        }
+
+        return Image(con.inputStream)
     }
 }
