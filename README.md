@@ -1,0 +1,2 @@
+# WebAPITest
+eclipseでの実行では、先にKotlinのプラグインをマーケットプレースから導入してください
