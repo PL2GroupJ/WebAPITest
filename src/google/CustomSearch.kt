@@ -12,7 +12,6 @@ import javafx.scene.control.TextArea
 import javafx.scene.control.TextField
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
-import main.Transition
 import main.TransitionPane
 import net.HttpUtils
 import java.net.URL
@@ -37,8 +36,8 @@ class CustomSearch : Initializable, TransitionPane {
     @FXML lateinit var imageView9: ImageView
     @FXML lateinit var imageView10: ImageView
 
-    private var transition: Transition? = null
     private val api: String = "https://www.googleapis.com/customsearch/v1?key=AIzaSyD-ScaQf_PGrtne5ZU4SGdtAqjsdF7uUrs&cx=011887155026765679509:hu43zsi7b_m&searchType=image&lr=lang_ja"
+    override lateinit var transition: (Any) -> Unit
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         // gray推奨 monoだと良い物が出てこない
@@ -77,9 +76,5 @@ class CustomSearch : Initializable, TransitionPane {
         // 連続使用を避けるため無効化。バインドしているためsearchFieldの方を無効化する
         searchField.text = ""
         searchField.isDisable = true
-    }
-
-    override fun setTransition(transition: Transition) {
-        this.transition = transition
     }
 }

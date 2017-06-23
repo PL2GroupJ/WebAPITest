@@ -7,35 +7,32 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.stage.Stage
 
-class Main : Application(), Transition {
+class Main : Application() {
     private lateinit var stage: Stage
 
     override fun start(primaryStage: Stage) {
         stage = primaryStage
-        setPane(CustomSearch::class.java.name)
+        setPane(CustomSearch())
         stage.show()
     }
 
-    override fun setPane(classPath: String) {
-        val className = classPath.substringAfter('.', "")
+    fun setPane(controller: Any) {
+        val classPath = controller.javaClass.name
+        val className = controller.javaClass.simpleName
         val loader = FXMLLoader(Class.forName(classPath).getResource("$className.fxml"))
+                        .apply { setController(controller) }
         val parent = loader.load<Parent>()
         stage.title = className
         stage.scene = Scene(parent)
 
-        val pane = loader.getController<Any>()
-        if (pane is TransitionPane) {
-            pane.setTransition(this)
+        if (controller is TransitionPane) {
+            controller.transition = this::setPane
         }
     }
 }
 
-interface Transition {
-    fun setPane(classPath: String)
-}
-
 interface TransitionPane {
-    fun setTransition(transition: Transition)
+    var transition: ((Any) -> Unit)
 }
 
 fun main(args: Array<String>) {
