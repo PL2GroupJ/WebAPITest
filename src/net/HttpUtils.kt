@@ -8,7 +8,7 @@ import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
 object HttpUtils {
-    fun get(urlString: String): String {
+    fun doGet(urlString: String): String {
         val url = URL(urlString)
         val con = when (url.protocol) {
             "http" -> url.openConnection() as HttpURLConnection
@@ -34,7 +34,7 @@ object HttpUtils {
         return input.readText()
     }
 
-    fun getImage(urlString: String): Image? {
+    fun doGetImage(urlString: String): Image? {
         val url = URL(urlString)
         val con = when (url.protocol) {
             "http" -> url.openConnection() as HttpURLConnection

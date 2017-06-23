@@ -16,7 +16,7 @@
             <TextField fx:id="searchField" focusTraversable="false" promptText="検索ワード" />
             <ComboBox fx:id="colorCombo" prefWidth="150.0" promptText="色の選択" />
             <ComboBox fx:id="rightsCombo" prefWidth="150.0" promptText="ライセンス" />
-            <Button fx:id="searchButton" mnemonicParsing="false" onAction="#onSearch" text="検索" />
+            <Button fx:id="searchButton" mnemonicParsing="false" text="検索" />
          </children>
       </HBox>
    </top>

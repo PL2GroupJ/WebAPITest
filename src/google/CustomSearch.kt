@@ -3,7 +3,11 @@ package google
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import data.SearchResult
+import javafx.application.Platform
 import javafx.beans.binding.Bindings
+import javafx.beans.property.BooleanProperty
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.concurrent.Task
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.Button
@@ -36,8 +40,11 @@ class CustomSearch : Initializable, TransitionPane {
     @FXML lateinit var imageView9: ImageView
     @FXML lateinit var imageView10: ImageView
 
-    private val api: String = "https://www.googleapis.com/customsearch/v1?key=AIzaSyD-ScaQf_PGrtne5ZU4SGdtAqjsdF7uUrs&cx=011887155026765679509:hu43zsi7b_m&searchType=image&lr=lang_ja"
     override lateinit var transition: (Any) -> Unit
+    private var canSearch: BooleanProperty = SimpleBooleanProperty(true)
+    private val apiKey: String = "AIzaSyD-ScaQf_PGrtne5ZU4SGdtAqjsdF7uUrs"
+    private val engineId: String = "011887155026765679509:hu43zsi7b_m"
+    private val apiUrl: String = "https://www.googleapis.com/customsearch/v1?"
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         // gray推奨 monoだと良い物が出てこない
@@ -46,35 +53,55 @@ class CustomSearch : Initializable, TransitionPane {
         // 参考　https://creativecommons.jp/licenses/
         rightsCombo.items.addAll("cc_publicdomain", "cc_attribute", "cc_sharealike", "cc_noncommercial", "cc_nonderived")
 
-        // 複数とのバインドのためにBindings.or()を２回使っている
+        // 複数とのバインドのためにBindings.or()をreduceで使用。拡張関数で書きたい
+        val bindingTargets = arrayOf(
+                searchField.textProperty().isEmpty,
+                colorCombo.selectionModel.selectedIndexProperty().isEqualTo(-1),
+                rightsCombo.selectionModel.selectedIndexProperty().isEqualTo(-1),
+                canSearch.not())
         searchButton.disableProperty().bind(
-                Bindings.or(
-                        searchField.textProperty().isEmpty,
-                Bindings.or(
-                        colorCombo.selectionModel.selectedIndexProperty().isEqualTo(-1),
-                        rightsCombo.selectionModel.selectedIndexProperty().isEqualTo(-1)
-                ))
+
+            bindingTargets.reduce { acc, booleanBinding -> Bindings.or(acc, booleanBinding) }
         )
+        searchButton.setOnAction { onSearch() }
     }
 
-    @FXML
     fun onSearch() {
-        // TODO: 通信処理は非同期で書く
-        val urlString = api + "&q=${searchField.text}&imgColorType=${colorCombo.selectionModel.selectedItem}&rights=${rightsCombo.selectionModel.selectedItem}"
-        val response = HttpUtils.get(urlString)
+        canSearch.value = false
+        Thread(object : Task<Boolean>() {
+            override fun call(): Boolean {
+                val images = searchImages()
+                Platform.runLater {
+                    val imageViews = arrayOf(imageView1, imageView2, imageView3, imageView4, imageView5, imageView6, imageView7, imageView8, imageView9, imageView10)
+                    images.forEachIndexed { index, image -> imageViews[index].image = image }
+                    canSearch.value = true
+                }
+                return true
+            }
+        }).apply {
+            isDaemon = true
+            start()
+        }
+    }
+
+    private fun searchImages(): List<Image?> {
+        val urlString = apiUrl +
+                "key=$apiKey" +
+                "&cx=$engineId" +
+                "&q=${searchField.text}" +
+                "&searchType=image" +
+                "&imgColorType=${colorCombo.selectionModel.selectedItem}" +
+                "&rights=${rightsCombo.selectionModel.selectedItem}" +
+                "&lr=lang_ja"
+        val response = HttpUtils.doGet(urlString)
         resultArea.text = response
         val gson = Gson()
+        // 取り出したい部分だけをJsonObjectで取得してからGSONでパースする
         val result: List<SearchResult> = gson.fromJson(response, JsonObject::class.java)
                 .get("items")
                 .asJsonArray
                 .map { gson.fromJson(it, SearchResult::class.java) }
-        val imageViews = arrayOf(imageView1, imageView2, imageView3, imageView4, imageView5, imageView6, imageView7, imageView8, imageView9, imageView10)
-        result.take(10)
-                .map { HttpUtils.getImage(it.link) }
-                .forEachIndexed { index, image -> imageViews[index].image = image }
-
-        // 連続使用を避けるため無効化。バインドしているためsearchFieldの方を無効化する
-        searchField.text = ""
-        searchField.isDisable = true
+        return result.take(10)
+                .map { HttpUtils.doGetImage(it.link) }
     }
 }
