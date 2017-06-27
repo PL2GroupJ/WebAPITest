@@ -1,18 +1,18 @@
 package main
 
-import google.CustomSearch
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.stage.Stage
+import twitter.RESTAPI
 
 class Main : Application() {
     private lateinit var stage: Stage
 
     override fun start(primaryStage: Stage) {
         stage = primaryStage
-        setPane(CustomSearch())
+        setPane(RESTAPI())
         stage.show()
     }
 
