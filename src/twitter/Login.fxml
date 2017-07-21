@@ -5,6 +5,7 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -21,7 +22,10 @@
     <RowConstraints maxHeight="307.0" minHeight="10.0" prefHeight="284.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <TextField fx:id="userField" GridPane.columnIndex="1" />
+      <TextField fx:id="userField" GridPane.columnIndex="1">
+         <tooltip>
+            <Tooltip text="Empty Tooltip" />
+         </tooltip></TextField>
       <Button mnemonicParsing="false" onAction="#onLogin" text="Button" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <Label text="メールアドレス" />
       <Label text="パスワード" GridPane.rowIndex="1" />

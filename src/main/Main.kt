@@ -7,6 +7,7 @@ import javafx.scene.Scene
 import javafx.stage.Stage
 import twitter.RESTAPI
 
+
 class Main : Application() {
     private lateinit var stage: Stage
 
